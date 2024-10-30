@@ -195,10 +195,19 @@ const UpdatePlanning = () => {
     setTimeRanges([...timeRanges, { hourStart: '', hourEnd: '' }]);
   };
 
-  const handleRemoveTimeRange = (index) => {
-    console.log("id of time exact" ,index);
-    
-    setTimeRanges(timeRanges.filter((_, i) => i !== index));
+  const handleRemoveTimeRange = async (id,index) => {
+    try{
+
+        const response = await axios.delete(`https://localhost:7125/api/TimeRanges/delete/${id}`);
+        console.log("id of time exact" ,id);
+        console.log("index of time exact" ,index);
+        console.log("res delete : ", response);
+        
+        setTimeRanges(timeRanges.filter((_, i) => i !== index));
+    }catch(err){
+        console.error("Error deleting test:", err);
+        
+    }
   };
 
   const handleUpdatePlanning = async (event) => {
@@ -213,6 +222,8 @@ const UpdatePlanning = () => {
     try {
       await axios.put('https://localhost:7125/api/Plannings/update', planningData);
       setSuccessMessage('Planning updated successfully!');
+      console.log("update .");
+      
       setErrorMessage('');
     } catch (error) {
       setErrorMessage('Error updating planning: ' + error.message);
@@ -252,6 +263,7 @@ const UpdatePlanning = () => {
         <h3>Time Ranges</h3>
         {timeRanges.map((range, index) => (
           <div key={index}>
+            {range.id}
             <label>
               Hour Start:
               <input
@@ -273,7 +285,7 @@ const UpdatePlanning = () => {
                 required
               />
             </label>
-            <button type="button" onClick={() => handleRemoveTimeRange(index)}>
+            <button type="button" onClick={() => handleRemoveTimeRange(range.id , index)}>
               Remove
             </button>
           </div>
